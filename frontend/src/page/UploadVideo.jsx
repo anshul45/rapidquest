@@ -17,10 +17,13 @@ const UploadVideo = () => {
       formData.append("video", selectedFile);
       formData.append("subtitle", subtitle);
 
-      const response = await fetch("http://localhost:3001/api/video/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        "http://localhost:3001/api/video/uploadvideo",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       const responseData = await response.text();
 

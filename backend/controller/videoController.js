@@ -4,11 +4,13 @@ cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
-  secure: true,
 });
 
 export const uploadVideo = async (req, res) => {
   try {
+    console.log(process.env.CLOUDINARY_API_SECRET);
+    console.log(process.env.CLOUDINARY_API_KEY);
+    console.log(process.env.CLOUDINARY_NAME);
     const { subtitle } = req.body;
     const videoFile = req.file;
 
@@ -20,6 +22,8 @@ export const uploadVideo = async (req, res) => {
     res.status(200).json({ result: uploadResult });
   } catch (error) {
     console.error("Error uploading video:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: error });
   }
 };
+
+export const getVideo = (req, res) => {};
