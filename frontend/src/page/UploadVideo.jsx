@@ -4,17 +4,30 @@ import ReactPlayer from "react-player";
 const UploadVideo = () => {
   const [subtitle, setSubtitle] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [timeStamp, setTimeStamp] = useState("");
+  const [videoDuration, setVideoDuration] = useState(null);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedFile(file);
   };
 
+  const handleCancel = () => {
+    setSelectedFile(null);
+    setVideoDuration(null);
+    setSubtitle("");
+    setTimeStamp("");
+  };
+
   const handleSubmit = async () => {
     try {
+      // if (!selectedFile || !subtitle || !timeStamp) {
+      //   alert("Please provide all required data");
+      // }
       const formData = new FormData();
       formData.append("video", selectedFile);
       formData.append("subtitle", subtitle);
+      formData.append("timeStamp", timeStamp);
 
       const response = await fetch(
         "http://localhost:3001/api/video/uploadvideo",
@@ -26,10 +39,8 @@ const UploadVideo = () => {
 
       const responseData = await response.json();
 
-      console.log("Response Data:", responseData);
-
       if (response.ok) {
-        console.log("Video successfully uploaded!");
+        console.log(responseData);
       } else {
         console.error("Failed to upload video.");
       }
@@ -46,7 +57,7 @@ const UploadVideo = () => {
           {selectedFile && (
             <i
               className="ri-close-line absolute z-50 top-[230px] left-[580px]  font-bold  text-5xl text-[#d90429] cursor-pointer"
-              onClick={() => setSelectedFile(null)}
+              onClick={handleCancel}
             ></i>
           )}
           {!selectedFile ? (
@@ -63,6 +74,7 @@ const UploadVideo = () => {
               height={340}
               controls={true}
               url={URL.createObjectURL(selectedFile)}
+              onReady={({ getDuration }) => setVideoDuration(getDuration())}
             />
           )}
           <input
@@ -74,7 +86,22 @@ const UploadVideo = () => {
         </div>
         <div className="flex-[1]  flex gap-6 flex-col pl-10">
           <h1 className="font-semibold text-3xl">Add a subtitle</h1>
-          <h1>Select time stamp</h1>
+
+          {videoDuration && (
+            <div className=" text-[#ff0000] text-xs font-semibold">
+              <h1>
+                Subtitles can be added from {Math.floor(videoDuration)} seconds
+              </h1>
+            </div>
+          )}
+
+          <input
+            type="number"
+            value={timeStamp}
+            placeholder="Add time stamp.."
+            onChange={(e) => setTimeStamp(e.target.value)}
+            className="w-80 px-3 py-2 rounded-xl text-black placeholder:text-black outline-none"
+          />
           <input
             type="text"
             value={subtitle}

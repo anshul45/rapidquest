@@ -1,51 +1,96 @@
 import fs from "fs";
 import cloudinary from "../utils/cloudinary.js";
+import Video from "../models/videoSchema.js";
 
 export const uploadVideo = async (req, res) => {
   try {
-    const { subtitle } = req.body;
+    const { subtitle, timeStamp } = req.body;
     const videoFile = req.file;
 
     if (!videoFile) {
       return res.status(400).json({
-        success: false,
         message: "No video file provided",
       });
     }
-
-    cloudinary.uploader
-      .upload(videoFile.path, {
-        resource_type: "video",
-        public_id: subtitle,
-      })
-      .then((result) => {
-        //use to delete file
-        fs.unlinkSync(videoFile.path);
-
-        return res.status(200).json({
-          messge: "Your Video has been uploded successfully to cloudinary",
-          data: {
-            url: result.url,
-          },
-        });
-      })
-      .catch((err) => {
-        //use to delete file
-        fs.unlinkSync(videoFile.path);
-        res.status(400).json({
-          messge: "someting went wrong while processing your request",
-          data: {
-            err,
-          },
-        });
+    if (!subtitle || !timeStamp) {
+      return res.status(400).json({
+        message: "No subtitle or time stamp provided",
       });
+    }
+
+    // Upload video to Cloudinary
+    const cloudinaryResult = await cloudinary.uploader.upload(videoFile, {
+      resource_type: "video",
+    });
+
+    // Delete file after uploading to Cloudinary
+    fs.unlinkSync(videoFile.path);
+
+    //Save data in database
+    const uploadVideo = new Video({
+      videoUrl: cloudinaryResult.secure_url,
+      videoPublicId: cloudinaryResult.public_id,
+      subtitle,
+      timeStamp: parseInt(timeStamp),
+    });
+
+    await uploadVideo.save();
+
+    res.status(200).json({
+      message: "Your video has been uploaded successfully",
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ success: false, message: "Error", error: error.message });
+    res.status(500).json({ message: "Error", error: error.message });
   }
 };
 
-export const getVideo = (req, res) => {
-  // Your code for getting video
+export const getVideo = async (req, res) => {
+  try {
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+      return res.status(404).json({
+        message: "Sorry not Video in database",
+      });
+    }
+
+    res.status(200).json({
+      video,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error",
+      error: error.message,
+    });
+  }
+};
+
+export const getSingleVideo = async (req, res) => {
+  try {
+    const { videoId } = req.params;
+
+    if (!videoId) {
+      return res.status(400).json({
+        message: "Video ID is missing",
+      });
+    }
+
+    // Fetch the video from the database using the Video model
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+      return res.status(404).json({
+        message: "Video not found",
+      });
+    }
+
+    res.status(200).json({
+      video,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error",
+      error: error.message,
+    });
+  }
 };

@@ -6,5 +6,6 @@ const videoRoutes = express.Router();
 
 videoRoutes.post("/uploadvideo", upload.single("video"), uploadVideo);
 videoRoutes.get("/getvideo", getVideo);
+videoRoutes.get("/getsinglevideo/:videoId", getSingleVideo);
 
 export default videoRoutes;
