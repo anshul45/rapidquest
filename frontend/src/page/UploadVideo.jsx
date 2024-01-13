@@ -4,7 +4,6 @@ import ReactPlayer from "react-player";
 const UploadVideo = () => {
   const [subtitle, setSubtitle] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  const [videoUrl, setVideoUrl] = useState(null);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -25,9 +24,8 @@ const UploadVideo = () => {
         }
       );
 
-      const responseData = await response.text();
+      const responseData = await response.json();
 
-      setVideoUrl(responseData);
       console.log("Response Data:", responseData);
 
       if (response.ok) {
@@ -64,7 +62,7 @@ const UploadVideo = () => {
               width={500}
               height={340}
               controls={true}
-              url={videoUrl}
+              url={URL.createObjectURL(selectedFile)}
             />
           )}
           <input

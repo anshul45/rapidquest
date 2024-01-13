@@ -1,8 +1,6 @@
 import express from "express";
-import multer from "multer";
-const upload = multer();
-
 import { uploadVideo, getVideo } from "../controller/videoController.js";
+import { upload } from "../utils/multer.js";
 
 const videoRoutes = express.Router();
 
