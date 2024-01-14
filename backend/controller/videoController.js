@@ -6,7 +6,7 @@ export const uploadVideo = async (req, res) => {
   try {
     const { captions } = req.body;
     const videoFile = req.file;
-
+    const data = JSON.parse(captions);
     if (!videoFile) {
       return res.status(400).json({
         message: "No video file provided",
@@ -30,9 +30,9 @@ export const uploadVideo = async (req, res) => {
     const uploadVideo = new Video({
       videoUrl: cloudinaryResult.secure_url,
       videoPublicId: cloudinaryResult.public_id,
-      captions: captions.map((caption) => ({
-        caption: caption.caption,
-        timeStamp: parseInt(caption.timeStamp),
+      captions: data.map((data) => ({
+        subtitle: data.subtitle,
+        timeStamp: parseInt(data.timeStamp),
       })),
     });
 

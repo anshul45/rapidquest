@@ -22,7 +22,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="px-32 mt-14">
+    <div className="px-10 mt-14">
       <h1 className="font-semibold text-3xl">Your Upoaded Videos</h1>
       {allVideo.length ? (
         <div className="flex justify-between mt-12 gap-7 flex-wrap">

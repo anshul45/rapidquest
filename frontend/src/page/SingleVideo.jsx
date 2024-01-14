@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const SingleVideo = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const id = location.pathname.split("/").pop();
 
@@ -13,7 +14,6 @@ const SingleVideo = () => {
         `http://localhost:3001/api/video/getsinglevideo/${id}`
       );
       const data = await res.json();
-      console.log(data);
       setVideo(data.video);
     } catch (error) {
       console.error("Error fetching video:", error.message);
@@ -32,22 +32,28 @@ const SingleVideo = () => {
   };
 
   // used for creating webtt which used for subtitle
-  const generateWebVTT = (subtitles, timeStamp) => {
+  const generateWebVTT = (captions) => {
     let webVTT = "WEBVTT \n";
 
-    const endTime = timeStamp + 2;
-
-    if (
-      typeof timeStamp !== "number" ||
-      (isNaN(timeStamp) && (typeof endTime !== "number" || isNaN(endTime)))
-    ) {
-      console.error("Invalid timeStamp:", timeStamp);
+    if (!Array.isArray(captions)) {
+      console.error("Invalid captions array:", captions);
       return "";
     }
 
-    webVTT += `${formatTime(timeStamp)}.100 --> ${formatTime(
-      endTime
-    )}.171 align:middle line:84%\n${subtitles}`;
+    captions.forEach((caption) => {
+      const { subtitle, timeStamp } = caption;
+
+      if (typeof timeStamp !== "number" || isNaN(timeStamp)) {
+        console.error("Invalid timeStamp in caption:", caption);
+        return;
+      }
+
+      const endTime = timeStamp + 1;
+
+      webVTT += `${formatTime(timeStamp)}.100 --> ${formatTime(
+        endTime
+      )}.171 align:middle line:84%\n${subtitle}\n`;
+    });
 
     return webVTT;
   };
@@ -55,9 +61,7 @@ const SingleVideo = () => {
   const mySubtitle_arr = [
     {
       kind: "subtitles",
-      src: `data:text/vtt;base64,${btoa(
-        generateWebVTT(video.subtitle, video.timeStamp)
-      )}`,
+      src: `data:text/vtt;base64,${btoa(generateWebVTT(video.captions))}`,
       srcLang: "en",
       default: true,
     },
