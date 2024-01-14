@@ -12,7 +12,17 @@ const UploadVideo = () => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    setSelectedFile(file);
+
+    if (file) {
+      // Check if the selected file is an MP4/video file
+      const fileType = file.type.split("/")[0];
+      if (fileType === "video") {
+        setSelectedFile(file);
+      } else {
+        toast.error("Please select a valid MP4/video file.");
+        setSelectedFile(null);
+      }
+    }
   };
 
   const handleCancel = () => {
