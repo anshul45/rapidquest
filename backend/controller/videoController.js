@@ -4,7 +4,7 @@ import Video from "../models/videoSchema.js";
 
 export const uploadVideo = async (req, res) => {
   try {
-    const { subtitle, timeStamp } = req.body;
+    const { captions } = req.body;
     const videoFile = req.file;
 
     if (!videoFile) {
@@ -12,7 +12,7 @@ export const uploadVideo = async (req, res) => {
         message: "No video file provided",
       });
     }
-    if (!subtitle || !timeStamp) {
+    if (!captions || !captions.length) {
       return res.status(400).json({
         message: "No subtitle or time stamp provided",
       });
@@ -30,8 +30,10 @@ export const uploadVideo = async (req, res) => {
     const uploadVideo = new Video({
       videoUrl: cloudinaryResult.secure_url,
       videoPublicId: cloudinaryResult.public_id,
-      subtitle,
-      timeStamp: parseInt(timeStamp),
+      captions: captions.map((caption) => ({
+        caption: caption.caption,
+        timeStamp: parseInt(caption.timeStamp),
+      })),
     });
 
     await uploadVideo.save();

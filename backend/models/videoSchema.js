@@ -9,14 +9,18 @@ const videoSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  subtitle: {
-    type: String,
-    required: true,
-  },
-  timeStamp: {
-    type: Number,
-    required: true,
-  },
+  captions: [
+    {
+      subtitle: {
+        type: String,
+        required: true,
+      },
+      timeStamp: {
+        type: Number,
+        required: true,
+      },
+    },
+  ],
 });
 
 export default mongoose.model("Video", videoSchema);
