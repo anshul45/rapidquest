@@ -6,6 +6,7 @@ import "remixicon/fonts/remixicon.css";
 import Home from "./page/Home.jsx";
 import UploadVideo from "./page/UploadVideo.jsx";
 import Header from "./components/Header.jsx";
+import SingleVideo from "./page/SingleVideo.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -14,6 +15,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/upload" element={<UploadVideo />} />
+        <Route path="/video/:id" element={<SingleVideo />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

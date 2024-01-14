@@ -19,7 +19,7 @@ export const uploadVideo = async (req, res) => {
     }
 
     // Upload video to Cloudinary
-    const cloudinaryResult = await cloudinary.uploader.upload(videoFile, {
+    const cloudinaryResult = await cloudinary.uploader.upload(videoFile.path, {
       resource_type: "video",
     });
 
@@ -44,9 +44,9 @@ export const uploadVideo = async (req, res) => {
   }
 };
 
-export const getVideo = async (req, res) => {
+export const getVideos = async (req, res) => {
   try {
-    const video = await Video.findById(videoId);
+    const video = await Video.find();
 
     if (!video) {
       return res.status(404).json({
