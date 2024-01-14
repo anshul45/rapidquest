@@ -24,8 +24,6 @@ const SingleVideo = () => {
     fetchData();
   }, []);
 
-  console.log(video);
-
   const formatTime = (seconds) => {
     const date = new Date(null);
     date.setSeconds(0);
@@ -49,7 +47,7 @@ const SingleVideo = () => {
 
     webVTT += `${formatTime(timeStamp)}.100 --> ${formatTime(
       endTime
-    )}.171 align:middle line:84%\n${subtitles}  \n`;
+    )}.171 align:middle line:84%\n${subtitles}`;
 
     return webVTT;
   };
