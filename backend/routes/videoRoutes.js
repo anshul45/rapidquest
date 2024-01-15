@@ -4,11 +4,14 @@ import {
   getVideos,
   getSingleVideo,
 } from "../controller/videoController.js";
-import { upload } from "../utils/multer.js";
 
 const videoRoutes = express.Router();
 
-videoRoutes.post("/uploadvideo", upload.single("video"), uploadVideo);
+videoRoutes.post("/uploadvideo", uploadVideo);
+videoRoutes.post("/upload", (req, res) => {
+  console.log(req.body);
+  res.status(200).send(req.body);
+});
 videoRoutes.get("/getvideos", getVideos);
 videoRoutes.get("/getsinglevideo/:videoId", getSingleVideo);
 

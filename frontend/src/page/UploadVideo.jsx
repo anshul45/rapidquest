@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { toast } from "react-toastify";
 
 import ReactPlayer from "react-player";
@@ -38,47 +39,55 @@ const UploadVideo = () => {
         toast.error("Please provide all required data");
         return;
       }
-
       // loading..
       toast.info("Uploading video...");
-
-      const formData = new FormData();
-      formData.append("video", selectedFile);
-      formData.append("captions", JSON.stringify(captions));
-
-      const response = await fetch(
-        "http://localhost:3001/api/video/uploadvideo",
+      const cloudinaryForm = new FormData();
+      cloudinaryForm.append("file", selectedFile);
+      cloudinaryForm.append("upload_preset", "rapidquest");
+      const videorResponse = await fetch(
+        "https://api.cloudinary.com/v1_1/anshul1/video/upload",
         {
           method: "POST",
-          body: formData,
+          body: cloudinaryForm,
         }
       );
 
-      const responseData = await response.json();
+      const resp = await videorResponse.json();
 
-      // Hide loading
+      const response = await axios.post(
+        "https://sore-gold-calf-coat.cyclic.app/api/video/uploadvideo",
+        {
+          videoUrl: resp.secure_url,
+          videoPublicId: resp.public_id,
+          captions: captions,
+        }
+      );
+
+      console.log(response);
+
+      const responseData = await response.data;
+      //Hide loading
       toast.dismiss();
-
-      if (response.ok) {
-        console.log(responseData);
+      if (response.status === 200) {
         setCaptions([]);
         setSelectedFile(null);
         setVideoDuration(null);
         setSubtitle("");
         setTimeStamp("");
-
-        // Success
         toast.success("Video uploaded successfully");
       } else {
-        console.error("Failed to upload video.");
-        // Error
+        setCaptions([]);
+        setSelectedFile(null);
+        setVideoDuration(null);
+        setSubtitle("");
+        setTimeStamp("");
+        //Error
         toast.error("Failed to upload video");
       }
     } catch (error) {
       console.error("Error uploading video:", error);
       // Hide loading
       toast.dismiss(); // Dismiss any existing toasts
-
       // Error
       toast.error("Error uploading video");
     }
@@ -156,7 +165,8 @@ const UploadVideo = () => {
           {videoDuration && (
             <div className=" text-[#ff0000] text-xs font-semibold">
               <h1>
-                Subtitles can be added from {Math.floor(videoDuration)} seconds
+                Subtitles can be added from 0 to {Math.floor(videoDuration)}{" "}
+                seconds
               </h1>
             </div>
           )}

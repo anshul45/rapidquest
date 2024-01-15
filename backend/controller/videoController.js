@@ -1,36 +1,32 @@
-import fs from "fs";
-import cloudinary from "../utils/cloudinary.js";
 import Video from "../models/videoSchema.js";
 
 export const uploadVideo = async (req, res) => {
   try {
-    const { captions } = req.body;
-    const videoFile = req.file;
-    const data = JSON.parse(captions);
-    if (!videoFile) {
+    const { captions, videoUrl, videoPublicId } = req.body;
+
+    if (!videoUrl) {
       return res.status(400).json({
-        message: "No video file provided",
+        message: "No video url provided",
       });
     }
+
+    if (!videoPublicId) {
+      return res.status(400).json({
+        message: "No video videoPublicId provided",
+      });
+    }
+
     if (!captions || !captions.length) {
       return res.status(400).json({
         message: "No subtitle or time stamp provided",
       });
     }
 
-    // Upload video to Cloudinary
-    const cloudinaryResult = await cloudinary.uploader.upload(videoFile.path, {
-      resource_type: "video",
-    });
-
-    // Delete file after uploading to Cloudinary
-    fs.unlinkSync(videoFile.path);
-
-    //Save data in database
+    // Save data in your database
     const uploadVideo = new Video({
-      videoUrl: cloudinaryResult.secure_url,
-      videoPublicId: cloudinaryResult.public_id,
-      captions: data.map((data) => ({
+      videoUrl,
+      videoPublicId,
+      captions: captions.map((data) => ({
         subtitle: data.subtitle,
         timeStamp: parseInt(data.timeStamp),
       })),
@@ -40,8 +36,10 @@ export const uploadVideo = async (req, res) => {
 
     res.status(200).json({
       message: "Your video has been uploaded successfully",
+      uploadVideo,
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Error", error: error.message });
   }
 };

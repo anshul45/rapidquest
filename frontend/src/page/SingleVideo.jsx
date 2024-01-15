@@ -11,7 +11,7 @@ const SingleVideo = () => {
   const fetchData = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3001/api/video/getsinglevideo/${id}`
+        `https://sore-gold-calf-coat.cyclic.app/api/video/getsinglevideo/${id}`
       );
       const data = await res.json();
       setVideo(data.video);

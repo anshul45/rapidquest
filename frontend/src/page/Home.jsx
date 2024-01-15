@@ -9,7 +9,9 @@ const Home = () => {
 
   const fetchVideo = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/video/getvideos");
+      const res = await fetch(
+        "https://sore-gold-calf-coat.cyclic.app/api/video/getvideos"
+      );
       const data = await res.json();
       setAllVideo(data.video);
     } catch (error) {
